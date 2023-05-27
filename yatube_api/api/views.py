@@ -1,12 +1,13 @@
 # TODO:  Напишите свой вариант
 from django.shortcuts import get_object_or_404
-from posts.models import Group, Post, Follow
-from rest_framework import pagination, permissions, viewsets, mixins
-from rest_framework.permissions import IsAuthenticated
+from posts.models import Follow, Group, Post
+from rest_framework import mixins, pagination, permissions, viewsets
 from rest_framework.filters import SearchFilter
+from rest_framework.permissions import IsAuthenticated
 
 from .permissions import IsAuthorOrReadOnly
-from .serializers import CommentSerializer, GroupSerializer, PostSerializer, FollowSerializer
+from .serializers import (CommentSerializer, FollowSerializer, GroupSerializer,
+                          PostSerializer)
 
 
 class FollowViewSet(mixins.CreateModelMixin,

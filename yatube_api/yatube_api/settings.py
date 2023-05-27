@@ -37,11 +37,6 @@ ROOT_URLCONF = 'yatube_api.urls'
 
 TEMPLATES_DIR = BASE_DIR / 'templates'
 
-# SIMPLE_JWT = {
-#     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-#     'AUTH_HEADER_TYPES': ('Bearer',),
-# }
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -98,12 +93,12 @@ STATICFILES_DIRS = ((BASE_DIR / 'static/'),)
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated', 
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-    ]
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
