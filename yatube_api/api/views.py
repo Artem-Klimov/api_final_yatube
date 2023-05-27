@@ -1,9 +1,8 @@
-# TODO:  Напишите свой вариант
 from django.shortcuts import get_object_or_404
 from posts.models import Follow, Group, Post
 from rest_framework import mixins, pagination, permissions, viewsets
 from rest_framework.filters import SearchFilter
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 
 from .permissions import IsAuthorOrReadOnly
 from .serializers import (CommentSerializer, FollowSerializer, GroupSerializer,
@@ -16,13 +15,12 @@ class FollowViewSet(mixins.CreateModelMixin,
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
     pagination_class = pagination.LimitOffsetPagination
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = (SearchFilter,)
     search_fields = ('following__username', 'user__username',)
 
     def get_queryset(self):
-        new_queryset = Follow.objects.filter(user=self.request.user)
-        return new_queryset
+        return Follow.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         return serializer.save(user=self.request.user)
@@ -36,7 +34,8 @@ class GroupViewSet(viewsets.ReadOnlyModelViewSet):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
+    # permission_classes = [AllowAny]
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -44,7 +43,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated, IsAuthorOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly, IsAuthorOrReadOnly]
 
     def get_queryset(self):
         post = get_object_or_404(Post, pk=self.kwargs.get('post_id'))
