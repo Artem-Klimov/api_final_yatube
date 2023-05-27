@@ -16,5 +16,6 @@ router.register(
 urlpatterns = [
     path('v1/', include(router.urls)),
     # path('v1/jwt/create/', views.obtain_auth_token, name='url_api_token'),
+    # path('v1/jwt/create/', views.obtain_auth_token, name='url_api_token'),
     path('v1/', include('djoser.urls.jwt')),
 ]
