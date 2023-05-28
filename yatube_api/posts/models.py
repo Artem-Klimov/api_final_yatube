@@ -60,14 +60,14 @@ class Follow(models.Model):
         related_name='follower',
     )
 
-    # class Meta:
-    #     constraints = [
-    #         models.UniqueConstraint(
-    #             fields=['following', 'user'],
-    #             name='unique_following'
-    #         ),
-    #         models.CheckConstraint(
-    #             check=~models.Q(user=models.F('following')),
-    #             name='prevent_self_follow',
-    #         )
-    #     ]
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['following', 'user'],
+                name='unique_following'
+            ),
+            models.CheckConstraint(
+                check=~models.Q(user=models.F('following')),
+                name='prevent_self_follow',
+            )
+        ]
