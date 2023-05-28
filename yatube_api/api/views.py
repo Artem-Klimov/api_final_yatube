@@ -1,11 +1,12 @@
 from django.shortcuts import get_object_or_404
-from posts.models import Follow, Group, Post, User
-from rest_framework import mixins, pagination, permissions, viewsets
+from posts.models import Follow, Group, Post
+from rest_framework import mixins, pagination, viewsets
 from rest_framework.filters import SearchFilter
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-from .permissions import OwnerOrReadOnly
+# from .permissions import OwnerOrReadOnly
 from .serializers import (CommentSerializer, FollowSerializer, GroupSerializer,
-                          PostSerializer, UserSerializer)
+                        PostSerializer)
 
 
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
@@ -16,16 +17,11 @@ class GroupViewSet(viewsets.ReadOnlyModelViewSet):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    permission_classes = (OwnerOrReadOnly,)
+    permission_classes = [IsAuthenticatedOrReadOnly]
     pagination_class = pagination.LimitOffsetPagination
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
-
-
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
 
 
 class FollowViewSet(mixins.CreateModelMixin,
@@ -34,7 +30,7 @@ class FollowViewSet(mixins.CreateModelMixin,
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
     pagination_class = pagination.LimitOffsetPagination
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = (SearchFilter,)
     search_fields = ('following__username', 'user__username',)
 
@@ -47,7 +43,7 @@ class FollowViewSet(mixins.CreateModelMixin,
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = (OwnerOrReadOnly,)
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
         post = get_object_or_404(Post, pk=self.kwargs.get('post_id'))
